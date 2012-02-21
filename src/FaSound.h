@@ -50,6 +50,7 @@ public:
 
     bool _setPosition(OgitorsPropertyBase* property, const Ogre::Vector3& position);
     bool _setSoundFile(OgitorsPropertyBase* property, const Ogre::String& soundfile);
+    bool _setVolume(OgitorsPropertyBase* property, const Ogre::Real& vol);
 
 protected:
     FaSoundEditor(CBaseEditorFactory *factory);
@@ -59,6 +60,7 @@ protected:
     Ogre::Entity *mEntity;
     OgitorsProperty<Ogre::Vector3>     *mPosition;
     OgitorsProperty<Ogre::String>      *mSoundFile;
+    OgitorsProperty<Ogre::Real>        *mVol;
 };
 
 

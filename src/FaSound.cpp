@@ -12,6 +12,7 @@ TiXmlElement* FaSoundEditor::exportDotScene(TiXmlElement *pParent)
     pSound->SetAttribute("name", mName->get().c_str());
     pSound->SetAttribute("id", Ogre::StringConverter::toString(mObjectID->get()).c_str());
     pSound->SetAttribute("soundFile", mSoundFile->get().c_str());
+    pSound->SetAttribute("volume", Ogre::StringConverter::toString(mVol->get()).c_str());
     // sound position
     TiXmlElement *pSoundPosition = pSound->InsertEndChild(TiXmlElement("position"))->ToElement();
     pSoundPosition->SetAttribute("x", Ogre::StringConverter::toString(mPosition->get().x).c_str());
@@ -88,14 +89,14 @@ void FaSoundEditor::showBoundingBox(bool bShow)
 
 void FaSoundEditor::createProperties(OgitorsPropertyValueMap &params)
 {
-    PROPERTY_PTR(mPosition, "position",Ogre::Vector3,Ogre::Vector3::ZERO,0,SETTER(Ogre::Vector3, FaSoundEditor, _setPosition));
-    PROPERTY_PTR(mSoundFile, "SoundFile",Ogre::String,"",0,SETTER(Ogre::String, FaSoundEditor, _setSoundFile));
+    PROPERTY_PTR(mPosition , "position" , Ogre::Vector3, Ogre::Vector3::ZERO, 0, SETTER(Ogre::Vector3, FaSoundEditor, _setPosition));
+    PROPERTY_PTR(mSoundFile, "SoundFile", Ogre::String , ""                 , 0, SETTER(Ogre::String, FaSoundEditor, _setSoundFile));
+    PROPERTY_PTR(mVol      , "Volume"   , Ogre::Real   , 80.0f              , 0, SETTER(Ogre::Real, FaSoundEditor, _setVolume));
     mProperties.initValueMap(params);
 }
 
 bool FaSoundEditor::_setSoundFile(OgitorsPropertyBase* property, const Ogre::String& soundfile)
 {
-  cout << soundfile << endl;
   return true;
 }
 
@@ -108,6 +109,13 @@ bool FaSoundEditor::_setPosition(OgitorsPropertyBase* property, const Ogre::Vect
 
     _updatePaging();
 
+    return true;
+}
+
+bool FaSoundEditor::_setVolume(OgitorsPropertyBase* property, const Ogre::Real& vol)
+{
+    if( (0 > vol)||(100 < vol) )
+        return false;
     return true;
 }
 
@@ -171,6 +179,7 @@ FaSoundEditor::FaSoundEditor(CBaseEditorFactory *factory)
     mHandle = 0;
     mPosition = 0;
     mUsesGizmos = true;
+    mVol = 0;
 }
 
 FaSoundEditor::~FaSoundEditor()
@@ -190,6 +199,7 @@ FaSoundEditorFactory::FaSoundEditorFactory(OgitorsView *view) : CBaseEditorFacto
 
     AddPropertyDefinition("SoundFile","Sound File","",PROP_STRING);
     AddPropertyDefinition("position","Position","The position of the object.",PROP_VECTOR3);
+    AddPropertyDefinition("Volume", "Volume", "The sound object's volume.0-100.",PROP_REAL);
 }
 
 CBaseEditorFactory *FaSoundEditorFactory::duplicate(OgitorsView *view)
